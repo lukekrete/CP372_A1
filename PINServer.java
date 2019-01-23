@@ -18,7 +18,7 @@ import java.net.Socket;
  * shut it down.
  */
 
-public class CapitalizeServer {
+public class PINServer {
 
     /**
      * Application method to run the server runs in an infinite loop
@@ -38,12 +38,12 @@ public class CapitalizeServer {
             colors[i-3] = args[i];
         }
         System.out.println("bWidth: " + bWidth + " , bHeight: " + bHeight);
-        System.out.println("The capitalization server is running.");
+        System.out.println("The P.I.N server is running.");
         int clientNumber = 0;
         ServerSocket listener = new ServerSocket(port);
         try {
             while (true) {
-                new Capitalizer(listener.accept(), clientNumber++,colors).start();
+                new PIN(listener.accept(), clientNumber++,colors).start();
             }
         } finally {
             listener.close();
@@ -55,13 +55,13 @@ public class CapitalizeServer {
      * socket.  The client terminates the dialogue by sending a single line
      * containing only a period.
      */
-    private static class Capitalizer extends Thread {
+    private static class PIN extends Thread {
         private String password = "aKLASUgfokblasdfkokasdfkmaskdkliskLKHN";
         private Socket socket;
         private int clientNumber;
         private String[] colors = new String[100];
 
-        public Capitalizer(Socket socket, int clientNumber,String[] colors_list) {
+        public PIN(Socket socket, int clientNumber,String[] colors_list) {
             this.socket = socket;
             this.clientNumber = clientNumber;
             this.colors = colors_list;
