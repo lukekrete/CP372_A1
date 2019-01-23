@@ -5,7 +5,7 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Scanner;
 
-public class CapitalizeClient {
+public class PINClient {
     public static void main(String[] args) throws Exception {
 //        System.out.println("Enter the IP address of a machine running the capitalize server:");
         System.out.println("Enter the IP address of server: ");
