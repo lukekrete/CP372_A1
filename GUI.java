@@ -93,8 +93,11 @@ public class ClientLogin {
 					lblIPAddress.setVisible(false);
 					lblPortNumber.setVisible(false);
 					btnConnect.setVisible(false);
+					ipTextField.setText("");
+					portTextField.setText("");
 					ipTextField.setVisible(false);
 					portTextField.setVisible(false);
+
 
 					/**
 					 * Fills the text box
@@ -104,56 +107,11 @@ public class ClientLogin {
 					for (int i = 0; i < 100; i++) {
 						notes = notes + "hello" + '\n';
 					}
-					
-					JButton btnPost = new JButton("POST");
-					btnPost.setMnemonic('P');
-					btnPost.addActionListener(new ActionListener() {
-						public void actionPerformed(ActionEvent e) {
-						}
-					});
-					
+
 					TextArea displayArea = new TextArea();
 					displayArea.setBounds(20, 10, 437, 210);
 					frame.getContentPane().add(displayArea);
-					btnPost.setBounds(299, 299, 158, 23);
-					frame.getContentPane().add(btnPost);
 					displayArea.setText(notes);
-					
-					JButton btnDisconnect = new JButton("DISCONNECT");
-					btnDisconnect.setMnemonic('D');
-					btnDisconnect.addActionListener(new ActionListener() {
-						public void actionPerformed(ActionEvent e) {
-						}
-					});
-					btnDisconnect.setBounds(299, 401, 158, 23);
-					frame.getContentPane().add(btnDisconnect);
-					
-					JButton btnPin = new JButton("PIN");
-					btnPin.setMnemonic('I');
-					btnPin.addActionListener(new ActionListener() {
-						public void actionPerformed(ActionEvent e) {
-						}
-					});
-					btnPin.setBounds(299, 367, 73, 23);
-					frame.getContentPane().add(btnPin);
-					
-					JButton btnUnpin = new JButton("UNPIN");
-					btnUnpin.setMnemonic('U');
-					btnUnpin.addActionListener(new ActionListener() {
-						public void actionPerformed(ActionEvent e) {
-						}
-					});
-					btnUnpin.setBounds(382, 367, 75, 23);
-					frame.getContentPane().add(btnUnpin);
-					
-					JButton btnGet = new JButton("GET");
-					btnGet.setMnemonic('G');
-					btnGet.addActionListener(new ActionListener() {
-						public void actionPerformed(ActionEvent e) {
-						}
-					});
-					btnGet.setBounds(299, 333, 158, 23);
-					frame.getContentPane().add(btnGet);
 					
 					yVal = new JTextField();
 					yVal.setBounds(187, 226, 46, 20);
@@ -202,11 +160,85 @@ public class ClientLogin {
 					Choice choice = new Choice();
 					choice.setBounds(299, 267, 158, 20);
 					frame.getContentPane().add(choice);
-					
+					choice.add("Red");
+					choice.add("Blue");
+					choice.add("Green");
 					
 					JLabel lblColor = new JLabel("Color");
 					lblColor.setBounds(243, 267, 46, 14);
 					frame.getContentPane().add(lblColor);
+
+					
+					JButton btnPost = new JButton("POST");
+					btnPost.setMnemonic('P');
+					btnPost.addActionListener(new ActionListener() {
+						public void actionPerformed(ActionEvent e) {
+						}
+					});
+					btnPost.setBounds(299, 299, 158, 23);
+
+					frame.getContentPane().add(btnPost);
+					
+					JButton btnGet = new JButton("GET");
+					btnGet.setMnemonic('G');
+					btnGet.addActionListener(new ActionListener() {
+						public void actionPerformed(ActionEvent e) {
+						}
+					});
+					btnGet.setBounds(299, 333, 158, 23);
+					frame.getContentPane().add(btnGet);
+
+					JButton btnPin = new JButton("PIN");
+					btnPin.setMnemonic('I');
+					btnPin.addActionListener(new ActionListener() {
+						public void actionPerformed(ActionEvent e) {
+						}
+					});
+					btnPin.setBounds(299, 367, 73, 23);
+					frame.getContentPane().add(btnPin);
+					
+					JButton btnUnpin = new JButton("UNPIN");
+					btnUnpin.setMnemonic('U');
+					btnUnpin.addActionListener(new ActionListener() {
+						public void actionPerformed(ActionEvent e) {
+						}
+					});
+					btnUnpin.setBounds(382, 367, 75, 23);
+					frame.getContentPane().add(btnUnpin);
+
+					JButton btnDisconnect = new JButton("DISCONNECT");
+					btnDisconnect.setMnemonic('D');
+					btnDisconnect.addActionListener(new ActionListener() {
+						public void actionPerformed(ActionEvent e) {
+							frame.setBounds(100, 100, 375, 160);
+							displayArea.setVisible(false);
+							lblXValue.setVisible(false);
+							xVal.setVisible(false);
+							yVal.setVisible(false);
+							lblYValue.setVisible(false);
+							height.setVisible(false);
+							lblHeight.setVisible(false);
+							width.setVisible(false);
+							lblWidth.setVisible(false);
+							lblMessage.setVisible(false);
+							textArea.setVisible(false);
+							lblColor.setVisible(false);
+							choice.setVisible(false);
+							btnPost.setVisible(false);
+							btnGet.setVisible(false);
+							btnPin.setVisible(false);
+							btnUnpin.setVisible(false);
+							btnDisconnect.setVisible(false);
+
+							ipTextField.setVisible(true);
+							lblIPAddress.setVisible(true);
+							portTextField.setVisible(true);
+							lblPortNumber.setVisible(true);
+							btnConnect.setVisible(true);
+						}
+					});
+					btnDisconnect.setBounds(299, 401, 158, 23);
+					frame.getContentPane().add(btnDisconnect);
 								
 				} catch (Exception error) {
 					JOptionPane.showMessageDialog(null,
