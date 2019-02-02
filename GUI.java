@@ -9,6 +9,7 @@ import java.util.Scanner;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import java.awt.Font;
 import javax.swing.JTextField;
 import javax.swing.JButton;
@@ -17,9 +18,14 @@ import java.awt.event.ActionEvent;
 import javax.swing.JOptionPane;
 import java.awt.TextArea;
 import java.awt.Choice;
+import java.awt.GridLayout;
+
 
 public class ClientLogin {
 
+	private int maxWidth;
+	private int maxHeight;
+	private String password = "aKLASUgfokblasdfkokasdfkmaskdkliskLKHN";
 	private JFrame frame;
 	private JTextField ipTextField;
 	private JTextField portTextField;
@@ -27,6 +33,7 @@ public class ClientLogin {
 	private JTextField xVal;
 	private JTextField width;
 	private JTextField height;
+	private int x, y, w, h;
 
 	/**
 	 * Launch the application.
@@ -85,6 +92,8 @@ public class ClientLogin {
 					BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 					PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
 
+					out.println("aKLASUgfokblasdfkokasdfkmaskdkliskLKHN");
+
 					/**
 					 * Resizes the window and creates all new buttons
 					 */
@@ -103,15 +112,10 @@ public class ClientLogin {
 					 * Fills the text box
 					 */
 
-					String notes = "";
-					for (int i = 0; i < 100; i++) {
-						notes = notes + "hello" + '\n';
-					}
-
 					TextArea displayArea = new TextArea();
 					displayArea.setBounds(20, 10, 437, 210);
 					frame.getContentPane().add(displayArea);
-					displayArea.setText(notes);
+					displayArea.setEditable(false);
 					
 					yVal = new JTextField();
 					yVal.setBounds(187, 226, 46, 20);
@@ -154,25 +158,86 @@ public class ClientLogin {
 					frame.getContentPane().add(textArea);
 					
 					JLabel lblMessage = new JLabel("Message");
-					lblMessage.setBounds(20, 267, 46, 14);
+					lblMessage.setBounds(20, 267, 60, 14);
 					frame.getContentPane().add(lblMessage);
 					
 					Choice choice = new Choice();
 					choice.setBounds(299, 267, 158, 20);
 					frame.getContentPane().add(choice);
-					choice.add("Red");
-					choice.add("Blue");
-					choice.add("Green");
+					
+					String colors = in.readLine();
+					Scanner color = new Scanner(colors);
+					while(color.hasNext()) {
+						choice.add(color.next());
+					}
 					
 					JLabel lblColor = new JLabel("Color");
 					lblColor.setBounds(243, 267, 46, 14);
 					frame.getContentPane().add(lblColor);
 
-					
+					maxWidth = Integer.parseInt(in.readLine());
+					maxHeight = Integer.parseInt(in.readLine());
+
 					JButton btnPost = new JButton("POST");
 					btnPost.setMnemonic('P');
 					btnPost.addActionListener(new ActionListener() {
 						public void actionPerformed(ActionEvent e) {
+							try {
+								x = Integer.parseInt(xVal.getText());
+								if (x < 0 || x > maxWidth) throw new NullPointerException();
+
+								y = Integer.parseInt(yVal.getText());
+								if (y < 0 || y > maxHeight) throw new IOException();
+
+								w = Integer.parseInt(width.getText());
+								if (w <= 0 || w > maxWidth) throw new IndexOutOfBoundsException();
+
+								h = Integer.parseInt(height.getText());
+								if (h <= 0 || h > maxHeight) throw new ArithmeticException();
+							
+							} catch(NumberFormatException n) {
+								JOptionPane.showMessageDialog(null,
+									"Enter an integer value",
+									"Invalid Input",
+									JOptionPane.ERROR_MESSAGE);
+
+							} catch(NullPointerException b) {
+								JOptionPane.showMessageDialog(null,
+									"Enter a x value between 0-" + maxWidth + ").",
+									"Invalid Coordinate",
+									JOptionPane.ERROR_MESSAGE);
+
+							} catch(IOException c) {
+								JOptionPane.showMessageDialog(null,
+									"Enter a y value between 0-" + maxHeight + ").",
+									"Invalid Coordinate",
+									JOptionPane.ERROR_MESSAGE);
+
+							} catch(IndexOutOfBoundsException d) {
+								JOptionPane.showMessageDialog(null,
+									"Enter a width between 0-" + maxWidth + ").",
+									"Invalid Width",
+									JOptionPane.ERROR_MESSAGE);
+
+							} catch(ArithmeticException d) {
+								JOptionPane.showMessageDialog(null,
+									"Enter a height between 0-" + maxWidth + ").",
+									"Invalid Height",
+									JOptionPane.ERROR_MESSAGE);
+							}
+
+							String post = "POST " + x + " " + y + " " + w + " " + h + " " + choice.getSelectedItem() + " " + textArea.getText();
+							out.println(post);
+
+							try {
+								displayArea.setText(in.readLine());
+
+							} catch (IOException error) {
+								JOptionPane.showMessageDialog(null,
+									"Message could not be posted.",
+									"Post Error",
+									JOptionPane.ERROR_MESSAGE);
+							}
 						}
 					});
 					btnPost.setBounds(299, 299, 158, 23);
@@ -183,15 +248,123 @@ public class ClientLogin {
 					btnGet.setMnemonic('G');
 					btnGet.addActionListener(new ActionListener() {
 						public void actionPerformed(ActionEvent e) {
+							JPanel panel = new JPanel(new GridLayout(0, 1));
+							JTextField xcoor = new JTextField();
+							JTextField ycoor = new JTextField();
+							JTextField msg = new JTextField();
+							Choice list = new Choice();
+							list.add("");
+							Scanner color = new Scanner(colors);
+							while(color.hasNext()) {
+								list.add(color.next());
+							}
+							panel.add(new JLabel("X-value"));
+							panel.add(xcoor);
+							panel.add(new JLabel("Y-value"));
+							panel.add(ycoor);
+							panel.add(new JLabel("Color"));
+							panel.add(list);
+							panel.add(new JLabel("Message"));
+							panel.add(msg);
+
+							int result = JOptionPane.showConfirmDialog(null, panel, "PIN",
+										JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+
+							if (result == JOptionPane.OK_OPTION) {
+								String get = ("");
+
+								if (xcoor.getText().equals("") && ycoor.getText().equals("")) {
+									get = get + "GET color=" + list.getSelectedItem()
+											  + " contains=" + " refersTo=" + msg.getText();
+
+								} else {
+									try {
+										x = Integer.parseInt(xcoor.getText());
+										if (x < 0 || x > maxWidth) throw new NumberFormatException();
+
+										y = Integer.parseInt(ycoor.getText());
+										if (y < 0 || y > maxHeight) throw new NumberFormatException();
+
+									} catch (NumberFormatException error) {
+										JOptionPane.showMessageDialog(null,
+											"Enter valid coordinates.",
+											"Invalid Coordinates",
+											JOptionPane.ERROR_MESSAGE);
+									}
+
+									get = get + "GET color=" + list.getSelectedItem()
+											  + " contains=" + x + " " + y + " refersTo=" +msg.getText();
+								}
+								out.println(get);
+							}
+
+							try {
+								displayArea.setText(in.readLine());
+
+							} catch (IOException error) {
+								JOptionPane.showMessageDialog(null,
+									"Could not find messages.",
+									"GET Error",
+									JOptionPane.ERROR_MESSAGE);
+							}
 						}
 					});
-					btnGet.setBounds(299, 333, 158, 23);
+					btnGet.setBounds(299, 333, 73, 23);
 					frame.getContentPane().add(btnGet);
+
+					JButton btnClear = new JButton("CLEAR");
+					btnClear.addActionListener(new ActionListener() {
+						public void actionPerformed(ActionEvent e) {
+							out.println("CLEAR");
+						}
+					});
+					btnClear.setMnemonic('C');
+					btnClear.setBounds(382, 333, 75, 23);
+					frame.getContentPane().add(btnClear);
 
 					JButton btnPin = new JButton("PIN");
 					btnPin.setMnemonic('I');
 					btnPin.addActionListener(new ActionListener() {
 						public void actionPerformed(ActionEvent e) {
+							JPanel panel = new JPanel(new GridLayout(0, 1));
+							JTextField xcoor = new JTextField();
+							JTextField ycoor = new JTextField();
+							panel.add(new JLabel("X-value"));
+							panel.add(xcoor);
+							panel.add(new JLabel("Y-value"));
+							panel.add(ycoor);
+
+							int result = JOptionPane.showConfirmDialog(null, panel, "PIN",
+										JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+							
+							if (result == JOptionPane.OK_OPTION) {
+								try {
+									x = Integer.parseInt(xcoor.getText());
+									if (x < 0 || x > maxWidth) throw new NumberFormatException();
+
+									y = Integer.parseInt(ycoor.getText());
+									if (y < 0 || y > maxHeight) throw new NumberFormatException();
+
+								} catch (NumberFormatException error) {
+									JOptionPane.showMessageDialog(null,
+										"Enter valid coordinates.",
+										"Invalid Coordinates",
+										JOptionPane.ERROR_MESSAGE);
+								}
+
+								String pin = ("PIN " + x + " " + " " + y);
+								out.println(pin);
+							}
+
+							try {
+								displayArea.setText(in.readLine());
+
+							} catch (IOException error) {
+								JOptionPane.showMessageDialog(null,
+									"Message could not be pinned.",
+									"PIN Error",
+									JOptionPane.ERROR_MESSAGE);
+							}
 						}
 					});
 					btnPin.setBounds(299, 367, 73, 23);
@@ -201,6 +374,45 @@ public class ClientLogin {
 					btnUnpin.setMnemonic('U');
 					btnUnpin.addActionListener(new ActionListener() {
 						public void actionPerformed(ActionEvent e) {
+							JPanel panel = new JPanel(new GridLayout(0, 1));
+							JTextField xVal = new JTextField();
+							JTextField yVal = new JTextField();
+							panel.add(new JLabel("X-value"));
+							panel.add(xVal);
+							panel.add(new JLabel("Y-value"));
+							panel.add(yVal);
+
+							int result = JOptionPane.showConfirmDialog(null, panel, "PIN",
+										JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+							
+							if (result == JOptionPane.OK_OPTION) {
+								try {
+									x = Integer.parseInt(xVal.getText());
+									if (x < 0 || x > maxWidth) throw new NumberFormatException();
+
+									y = Integer.parseInt(yVal.getText());
+									if (y < 0 || y > maxHeight) throw new NumberFormatException();
+
+								} catch (NumberFormatException error) {
+									JOptionPane.showMessageDialog(null,
+										"Enter valid coordinates.",
+										"Invalid Coordinates",
+										JOptionPane.ERROR_MESSAGE);
+								}
+							}
+
+							String unpin = ("UNPIN " + x + " " + " " + y);
+							out.println(unpin);
+
+							try {
+								displayArea.setText(in.readLine());
+
+							} catch (IOException error) {
+								JOptionPane.showMessageDialog(null,
+									"Message could not be unpinned.",
+									"UNPIN Error",
+									JOptionPane.ERROR_MESSAGE);
+							}
 						}
 					});
 					btnUnpin.setBounds(382, 367, 75, 23);
@@ -210,6 +422,8 @@ public class ClientLogin {
 					btnDisconnect.setMnemonic('D');
 					btnDisconnect.addActionListener(new ActionListener() {
 						public void actionPerformed(ActionEvent e) {
+							out.println("DISCONNECT");
+
 							frame.setBounds(100, 100, 375, 160);
 							displayArea.setVisible(false);
 							lblXValue.setVisible(false);
@@ -226,6 +440,7 @@ public class ClientLogin {
 							choice.setVisible(false);
 							btnPost.setVisible(false);
 							btnGet.setVisible(false);
+							btnClear.setVisible(false);
 							btnPin.setVisible(false);
 							btnUnpin.setVisible(false);
 							btnDisconnect.setVisible(false);
