@@ -274,8 +274,8 @@ public class ClientLogin {
 								String get = ("");
 
 								if (xcoor.getText().equals("") && ycoor.getText().equals("")) {
-									get = get + "GET color= " + list.getSelectedItem()
-											  + " contains= " + " refersTo=" + msg.getText();
+									get = get + "GET color=" + list.getSelectedItem()
+											  + " contains=" + " refersTo=" + msg.getText();
 
 								} else {
 									try {
@@ -296,16 +296,16 @@ public class ClientLogin {
 											  + " contains=" + x + " " + y + " refersTo=" +msg.getText();
 								}
 								out.println(get);
-							}
 
-							try {
-								displayArea.setText(in.readLine());
-
-							} catch (IOException error) {
-								JOptionPane.showMessageDialog(null,
-									"Could not find messages.",
-									"GET Error",
-									JOptionPane.ERROR_MESSAGE);
+								try {
+									displayArea.setText(in.readLine());
+	
+								} catch (IOException error) {
+									JOptionPane.showMessageDialog(null,
+										"Could not find messages.",
+										"GET Error",
+										JOptionPane.ERROR_MESSAGE);
+								}
 							}
 						}
 					});
@@ -354,16 +354,16 @@ public class ClientLogin {
 
 								String pin = ("PIN " + x + " " + y);
 								out.println(pin);
-							}
 
-							try {
-								displayArea.setText(in.readLine());
-
-							} catch (IOException error) {
-								JOptionPane.showMessageDialog(null,
-									"Message could not be pinned.",
-									"PIN Error",
-									JOptionPane.ERROR_MESSAGE);
+								try {
+									displayArea.setText(in.readLine());
+	
+								} catch (IOException error) {
+									JOptionPane.showMessageDialog(null,
+										"Message could not be pinned.",
+										"PIN Error",
+										JOptionPane.ERROR_MESSAGE);
+								}
 							}
 						}
 					});
@@ -399,19 +399,20 @@ public class ClientLogin {
 										"Invalid Coordinates",
 										JOptionPane.ERROR_MESSAGE);
 								}
-							}
 
-							String unpin = ("UNPIN " + x + " " + y);
-							out.println(unpin);
+								String unpin = ("UNPIN " + x + " " + y);
+								out.println(unpin);
 
-							try {
-								displayArea.setText(in.readLine());
+								try {
+									displayArea.setText(in.readLine());
 
-							} catch (IOException error) {
-								JOptionPane.showMessageDialog(null,
-									"Message could not be unpinned.",
-									"UNPIN Error",
-									JOptionPane.ERROR_MESSAGE);
+								} catch (IOException error) {
+									JOptionPane.showMessageDialog(null,
+										"Message could not be unpinned.",
+										"UNPIN Error",
+										JOptionPane.ERROR_MESSAGE);
+								}
+
 							}
 						}
 					});
