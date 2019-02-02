@@ -21,7 +21,7 @@ import java.awt.Choice;
 import java.awt.GridLayout;
 
 
-public class ClientLogin {
+public class PINClient {
 
 	private int maxWidth;
 	private int maxHeight;
@@ -42,7 +42,7 @@ public class ClientLogin {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					ClientLogin window = new ClientLogin();
+					PINClient window = new PINClient();
 					window.frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -54,7 +54,7 @@ public class ClientLogin {
 	/**
 	 * Create the application.
 	 */
-	public ClientLogin() {
+	public PINClient() {
 		frame = new JFrame();
 		frame.setBounds(100, 100, 375, 160);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -226,17 +226,23 @@ public class ClientLogin {
 									JOptionPane.ERROR_MESSAGE);
 							}
 
-							String post = "POST " + x + " " + y + " " + w + " " + h + " " + choice.getSelectedItem() + " " + textArea.getText();
-							out.println(post);
+							if (xVal.getText().equals("") || yVal.getText().equals("") ||
+								width.getText().equals("") || height.getText().equals("")) {
+									displayArea.setText("Message was not pinned.");
 
-							try {
-								displayArea.setText(in.readLine());
+							} else {
+								String post = "POST " + x + " " + y + " " + w + " " + h + " " + choice.getSelectedItem() + " " + textArea.getText();
+								out.println(post);
 
-							} catch (IOException error) {
-								JOptionPane.showMessageDialog(null,
-									"Message could not be posted.",
-									"Post Error",
-									JOptionPane.ERROR_MESSAGE);
+								try {
+									displayArea.setText(in.readLine());
+
+								} catch (IOException error) {
+									JOptionPane.showMessageDialog(null,
+										"Message could not be posted.",
+										"Post Error",
+										JOptionPane.ERROR_MESSAGE);
+								}
 							}
 						}
 					});
@@ -316,6 +322,17 @@ public class ClientLogin {
 					btnClear.addActionListener(new ActionListener() {
 						public void actionPerformed(ActionEvent e) {
 							out.println("CLEAR");
+
+							try {
+								displayArea.setText(in.readLine());
+
+							} catch (IOException error) {
+								JOptionPane.showMessageDialog(null,
+									"Could not find messages.",
+									"GET Error",
+									JOptionPane.ERROR_MESSAGE);
+							}
+
 						}
 					});
 					btnClear.setMnemonic('C');
