@@ -228,7 +228,7 @@ public class PINClient {
 
 							if (xVal.getText().equals("") || yVal.getText().equals("") ||
 								width.getText().equals("") || height.getText().equals("")) {
-									displayArea.setText("Message was not pinned.");
+									displayArea.setText("Message was not posted.");
 
 							} else {
 								String post = "POST " + x + " " + y + " " + w + " " + h + " " + choice.getSelectedItem() + " " + textArea.getText();
@@ -291,15 +291,15 @@ public class PINClient {
 										y = Integer.parseInt(ycoor.getText());
 										if (y < 0 || y > maxHeight) throw new NumberFormatException();
 
+										get = get + "GET color=" + list.getSelectedItem()
+											  + " contains=" + x + " " + y + " refersTo=" +msg.getText();
+
 									} catch (NumberFormatException error) {
 										JOptionPane.showMessageDialog(null,
 											"Enter valid coordinates.",
 											"Invalid Coordinates",
 											JOptionPane.ERROR_MESSAGE);
 									}
-
-									get = get + "GET color=" + list.getSelectedItem()
-											  + " contains=" + x + " " + y + " refersTo=" +msg.getText();
 								}
 								out.println(get);
 
@@ -369,17 +369,22 @@ public class PINClient {
 										JOptionPane.ERROR_MESSAGE);
 								}
 
-								String pin = ("PIN " + x + " " + y);
-								out.println(pin);
+								if(xcoor.getText().equals("") || ycoor.getText().equals("")) {
+									displayArea.setText("Message was not pinned.");
 
-								try {
-									displayArea.setText(in.readLine());
-	
-								} catch (IOException error) {
-									JOptionPane.showMessageDialog(null,
-										"Message could not be pinned.",
-										"PIN Error",
-										JOptionPane.ERROR_MESSAGE);
+								} else {
+									String pin = ("PIN " + x + " " + y);
+									out.println(pin);
+
+									try {
+										displayArea.setText(in.readLine());
+		
+									} catch (IOException error) {
+										JOptionPane.showMessageDialog(null,
+											"Message could not be pinned.",
+											"PIN Error",
+											JOptionPane.ERROR_MESSAGE);
+									}
 								}
 							}
 						}
@@ -392,22 +397,22 @@ public class PINClient {
 					btnUnpin.addActionListener(new ActionListener() {
 						public void actionPerformed(ActionEvent e) {
 							JPanel panel = new JPanel(new GridLayout(0, 1));
-							JTextField xVal = new JTextField();
-							JTextField yVal = new JTextField();
+							JTextField xcoor = new JTextField();
+							JTextField ycoor = new JTextField();
 							panel.add(new JLabel("X-value"));
-							panel.add(xVal);
+							panel.add(xcoor);
 							panel.add(new JLabel("Y-value"));
-							panel.add(yVal);
+							panel.add(ycoor);
 
 							int result = JOptionPane.showConfirmDialog(null, panel, "PIN",
 										JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 							
 							if (result == JOptionPane.OK_OPTION) {
 								try {
-									x = Integer.parseInt(xVal.getText());
+									x = Integer.parseInt(xcoor.getText());
 									if (x < 0 || x > maxWidth) throw new NumberFormatException();
 
-									y = Integer.parseInt(yVal.getText());
+									y = Integer.parseInt(ycoor.getText());
 									if (y < 0 || y > maxHeight) throw new NumberFormatException();
 
 								} catch (NumberFormatException error) {
@@ -417,19 +422,23 @@ public class PINClient {
 										JOptionPane.ERROR_MESSAGE);
 								}
 
-								String unpin = ("UNPIN " + x + " " + y);
-								out.println(unpin);
+								if(xcoor.getText().equals("") || ycoor.getText().equals("")) {
+									displayArea.setText("Message was not unpinned.");
 
-								try {
-									displayArea.setText(in.readLine());
+								} else {
+									String unpin = ("UNPIN " + x + " " + y);
+									out.println(unpin);
 
-								} catch (IOException error) {
-									JOptionPane.showMessageDialog(null,
-										"Message could not be unpinned.",
-										"UNPIN Error",
-										JOptionPane.ERROR_MESSAGE);
+									try {
+										displayArea.setText(in.readLine());
+
+									} catch (IOException error) {
+										JOptionPane.showMessageDialog(null,
+											"Message could not be unpinned.",
+											"UNPIN Error",
+											JOptionPane.ERROR_MESSAGE);
+									}
 								}
-
 							}
 						}
 					});
