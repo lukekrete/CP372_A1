@@ -274,8 +274,8 @@ public class ClientLogin {
 								String get = ("");
 
 								if (xcoor.getText().equals("") && ycoor.getText().equals("")) {
-									get = get + "GET color=" + list.getSelectedItem()
-											  + " contains=" + " refersTo=" + msg.getText();
+									get = get + "GET color= " + list.getSelectedItem()
+											  + " contains= " + " refersTo=" + msg.getText();
 
 								} else {
 									try {
@@ -352,7 +352,7 @@ public class ClientLogin {
 										JOptionPane.ERROR_MESSAGE);
 								}
 
-								String pin = ("PIN " + x + " " + " " + y);
+								String pin = ("PIN " + x + " " + y);
 								out.println(pin);
 							}
 
@@ -401,7 +401,7 @@ public class ClientLogin {
 								}
 							}
 
-							String unpin = ("UNPIN " + x + " " + " " + y);
+							String unpin = ("UNPIN " + x + " " + y);
 							out.println(unpin);
 
 							try {
