@@ -4,19 +4,9 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
-
-/**
- * SOURCE:  http://cs.lmu.edu/~ray/notes/javanetexamples/
- *
- * A server program which accepts requests from clients to capitalize strings.
- * When clients connect, a new thread is started to handle an interactive dialog
- * in which the client sends in a string and the server thread sends back the
- * capitalized version of the string.
- *
- * The program is runs in an infinite loop, so shutdown in platform dependent.
- * If you ran it from a console window with the "java" interpreter, Ctrl+C will
- * shut it down.
- */
+import java.util.LinkedList;
+import java.util.ArrayList;
+import java.util.Scanner;
 
 public class PINServer {
 
@@ -31,19 +21,19 @@ public class PINServer {
 
     public static void main(String[] args) throws Exception {
         int port = Integer.parseInt(args[0]);
-        int bWidth = Integer.parseInt(args[1]);
-        int bHeight = Integer.parseInt(args[2]);
-        String[] colors = new String[100];
+        String bWidth = args[1];
+        String bHeight = args[2];
+        String colors = "";
         for(int i = 3; i < args.length; i++){
-            colors[i-3] = args[i];
+            colors = colors + args[i] + " ";
         }
-        System.out.println("bWidth: " + bWidth + " , bHeight: " + bHeight);
+        
         System.out.println("The P.I.N server is running.");
         int clientNumber = 0;
         ServerSocket listener = new ServerSocket(port);
         try {
             while (true) {
-                new PIN(listener.accept(), clientNumber++,colors).start();
+                new PIN(listener.accept(), clientNumber++, colors, bWidth, bHeight).start();
             }
         } finally {
             listener.close();
@@ -59,14 +49,151 @@ public class PINServer {
         private String password = "aKLASUgfokblasdfkokasdfkmaskdkliskLKHN";
         private Socket socket;
         private int clientNumber;
-        private String[] colors = new String[100];
+        private String colors = "";
+        private String bWidth;
+        private String bHeight;
 
-        public PIN(Socket socket, int clientNumber,String[] colors_list) {
+        public PIN(Socket socket, int clientNumber, String colors_list, String width, String height) {
             this.socket = socket;
             this.clientNumber = clientNumber;
             this.colors = colors_list;
+            this.bWidth = width;
+            this.bHeight = height;
             log("New connection with client# " + clientNumber + " at " + socket);
         }
+
+        
+    private class Pin{
+        int x_coord;
+        int y_coord;
+
+            Pin(int x, int y){
+                x_coord = x;
+                y_coord = y;
+            }
+    }
+
+    /* Linked list Node*/
+    private class Note { 
+        String message;
+        String colour;
+        int status;//unpinned = 0, pinned > 0
+        LinkedList<Pin> pins;
+        int x;
+        int y;
+        int height;
+        int width;
+  
+        // Constructor to create a new node 
+        // Next is by default initialized 
+        // as null 
+        Note(String m, String c, int x_2, int y_2, int w, int h) {
+             message = m;
+             colour = c;
+             status = 0;  //unpinned = 0, pinned > 0
+             pins = new LinkedList<Pin>();
+             x = x_2;
+             y = y_2;
+             height = h;
+             width = w;
+        } 
+    } 
+
+    LinkedList<Note> board = new LinkedList<Note>();
+    ArrayList<Pin> pins_list = new ArrayList<Pin>();
+
+    public void GET(String request){
+
+    }
+
+    //WORKS
+    public void POST(String request) {
+        Scanner line = new Scanner(request);
+        int x_coord = Integer.parseInt(line.next());
+        int y_coord = Integer.parseInt(line.next());
+        int width = Integer.parseInt(line.next());
+        int height = Integer.parseInt(line.next());
+        String color = line.next();
+        String message = "";
+
+        //RE-CONCAT THE MESSAGE
+        while(line.hasNext()) {
+            message = message + line.next() + " ";
+        }
+        //just to omit having an extra space at the end
+        //message = message + parts[i+1];
+        //create the new note with the info we've retrieved
+        Note newNote = new Note(message, color, x_coord, y_coord, width, height);
+        //add new note to the board
+        board.add(newNote);
+    }
+
+    //WORKS
+    public void PIN(String request){
+        Scanner line = new Scanner(request);
+        int x = Integer.parseInt(line.next());
+        int y = Integer.parseInt(line.next());
+        //create new pin with coordinates from client
+        Pin newPin = new Pin(x,y);
+
+        Note current;
+        for(int i = 0; i <board.size(); i++){
+            current = board.get(i);
+            //ensure that the pin is within the bounds of the current note
+            //CAN WE PUT 2 PINS ON TOP OF EACHOTHER????
+            if(x >= current.x && x <= current.x + current.width && y >= current.y && y <= current.y + current.height){
+                current.status++;
+                current.pins.add(newPin);
+            }
+        }
+        pins_list.add(newPin);
+        //log(pins_list.get(0).x_coord + ", " + pins_list.get(0).y_coord);
+    }
+
+    //WORKS
+    public void UNPIN(String request){
+        Scanner line = new Scanner(request);
+        int x = Integer.parseInt(line.next());
+        int y = Integer.parseInt(line.next());
+        int i = 0, found = 0;
+        for (i = 0; i < pins_list.size(); i++) {
+            if(pins_list.get(i).x_coord == x && pins_list.get(i).y_coord == y) {
+                pins_list.remove(i);
+                found = 1;
+            }
+        }
+        //If the pin exists in the pin list
+        if (found == 1) {
+            Note current;
+            for (i = 0; i < board.size(); i++) {
+                //set current note
+                current = board.get(i);
+                for (int j = 0; j < current.pins.size(); j++) {
+                    //check to see if that note is pinned by the target pin
+                    if (current.pins.get(j).x_coord == x && current.pins.get(j).y_coord == y) {
+                        current.pins.remove(i);
+                        if(current.status >0) {
+                            //System.out.println(current.status);
+                            current.status--;
+                            //System.out.println(current.status);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    //I THINK WORKS?
+    public void CLEAR(){
+        Note current;
+        for (int i = 0; i < board.size(); i++){
+            current = board.get(i);
+            //determine if the note is pinned or not
+            if (current.status == 0){
+                //delete it if it's not pinned
+                board.remove(i);
+            }
+        }
+    }
 
         /**
          * Services this thread's client by first sending the
@@ -82,42 +209,65 @@ public class PINServer {
                 BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
 
-                out.println("Validating Client-Server password...");
+
                 String compare = in.readLine();
                 if (compare.equals(password)) {
-                    // Send a welcome message to the client.
-                    out.println("Hello, you are client #" + clientNumber + ".");
-                    out.println("The list of colours are as follows: ");
-                    int i = 0;
-                    while(this.colors[i] != null && i < this.colors.length){
-                        out.print(this.colors[i] + " ");
-                        i++;
-                    }
-                    out.println("");
-    //                out.println("Enter a line with only a period to quit\n");
+                    out.println(colors);
+                    out.println(bWidth);
+                    out.println(bHeight);
 
-                    // Get messages from the client, line by line; return them
-                    // capitalized
+                    // Get messages from the client
+                    
+
                     while (true) {
                         String input = in.readLine();
-                        if (input == null || input.equals(".")) {
-                            break;
+                        Scanner line = new Scanner(input);
+
+                        String command = line.next();
+                        if (command.equals("POST")) {
+                            POST(line.nextLine());
+                            out.println("Message successfully posted.");
+
+                        } else if (command.equals("GET")) {
+                            System.out.println(line.nextLine());
+                            out.println("Messages found.");
+
+                        } else if (command.equals("PIN")) {
+                            PIN(line.nextLine());
+                            //System.out.println(line.nextLine());
+                            out.println("Message successfully pinned.");
+
+                        } else if (command.equals("UNPIN")) {
+                            UNPIN(line.nextLine());
+                            //System.out.println(line.nextLine());
+                            out.println("Message successfully unpinned");
+
+                        } else if (command.equals("CLEAR")) {
+                            CLEAR();
+                            out.println("All unpinned notes cleared.");
+            
+                        } else if (command.equals("DISCONNECT")) {
+                            try {
+                                socket.close();
+
+                            } catch (Exception e) {
+                                log("Couldn't close the socket.");
+
+                            }
                         }
-                        out.println(input.toUpperCase());
                     }
+                    
+
+                    
                 } else {
                     out.println("Not using Client: Access Denied.");
-                }
-            } catch (IOException e) {
+
+            }} catch (IOException e) {
                 log("Error handling client# " + clientNumber + ": " + e);
-            } finally {
-                try {
-                    socket.close();
-                } catch (IOException e) {
-                    log("Couldn't close a socket, what's going on?");
-                }
-                log("Connection with client# " + clientNumber + " closed");
-            }
+                
+            } //finally {
+                log("Connection with client#" + clientNumber + " closed.");
+            //}
         }
 
         /**
@@ -130,4 +280,3 @@ public class PINServer {
     }
     
 }
-
