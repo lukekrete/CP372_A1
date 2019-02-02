@@ -190,7 +190,9 @@ public class PINServer {
             //determine if the note is pinned or not
             if (current.status == 0){
                 //delete it if it's not pinned
+                System.out.println("Delete: " + current.message);
                 board.remove(i);
+
             }
         }
     }
@@ -229,7 +231,8 @@ public class PINServer {
                             out.println("Message successfully posted.");
 
                         } else if (command.equals("GET")) {
-                            System.out.println(line.nextLine());
+                            GET(line.nextLine());
+                            //System.out.println(line.nextLine());
                             out.println("Messages found.");
 
                         } else if (command.equals("PIN")) {
