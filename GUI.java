@@ -230,6 +230,10 @@ public class PINClient {
 								width.getText().equals("") || height.getText().equals("")) {
 									displayArea.setText("Message was not posted.");
 
+							} else if (x < 0 || x > maxWidth || y < 0 || y > maxHeight ||
+										w <= 0 || w > maxWidth || h <= 0 || h > maxHeight) {
+											displayArea.setText("Message was not posted.");
+							
 							} else {
 								String post = "POST " + x + " " + y + " " + w + " " + h + " " + choice.getSelectedItem() + " " + textArea.getText();
 								out.println(post);
@@ -278,9 +282,44 @@ public class PINClient {
 							if (result == JOptionPane.OK_OPTION) {
 								String get = ("");
 
-								if (xcoor.getText().equals("") && ycoor.getText().equals("")) {
-									get = get + "GET color=" + list.getSelectedItem()
-											  + " contains=" + " refersTo=" + msg.getText();
+								if (xcoor.getText().equals("") && ycoor.getText().equals("") && 
+									list.getSelectedItem().equals("") && msg.getText().equals("")) {
+									get = get + "GET ALL";
+
+								} else if (xcoor.getText().equals("") && ycoor.getText().equals("") && 
+											list.getSelectedItem().equals("")) {
+												get = get + "GET refersTo=" + msg.getText();
+
+								} else if (xcoor.getText().equals("") && ycoor.getText().equals("") && 
+											msg.getText().equals("")){
+												get = get + "GET color=" + list.getSelectedItem();
+								
+								} else if (list.getSelectedItem().equals("") && msg.getText().equals("")) {
+									if (xcoor.getText().equals("") || ycoor.getText().equals("")) {
+										get = "";
+
+									} else {
+										get = get + "GET contains=" + xcoor.getText() + " " + ycoor.getText(); 
+									}
+								
+								} else if (xcoor.getText().equals("") && ycoor.getText().equals("")) {
+										get = get + "GET color=" + list.getSelectedItem() + " refersTo=" + msg.getText();
+
+								} else if (list.getSelectedItem().equals("")) {
+									if (xcoor.getText().equals("") || ycoor.getText().equals("")) {
+										get = "";
+
+									} else {
+										get = get + "GET contains=" + xcoor.getText() + " " + ycoor.getText() + " refersTo=" + msg.getText();
+									}
+
+								} else if (msg.getText().equals("")) {
+									if (xcoor.getText().equals("") || ycoor.getText().equals("")) {
+										get = "";
+
+									} else {
+										get = get + "GET contains=" + xcoor.getText() + " " + ycoor.getText() + " color=" +list.getSelectedItem();
+									}
 
 								} else {
 									try {
@@ -290,9 +329,13 @@ public class PINClient {
 										y = Integer.parseInt(ycoor.getText());
 										if (y < 0 || y > maxHeight) throw new NumberFormatException();
 
-										get = get + "GET color=" + list.getSelectedItem()
-											  + " contains=" + x + " " + y + " refersTo=" +msg.getText();
-
+										if (xcoor.getText().equals("") || ycoor.getText().equals("")) {
+											get = "";
+	
+										} else {
+											get = get + "GET color=" + list.getSelectedItem()
+												+ " contains=" + x + " " + y + " refersTo=" + msg.getText();
+										}
 									} catch (NumberFormatException error) {
 										JOptionPane.showMessageDialog(null,
 											"Enter valid coordinates.",
@@ -300,16 +343,25 @@ public class PINClient {
 											JOptionPane.ERROR_MESSAGE);
 									}
 								}
-								out.println(get);
 
-								try {
-									displayArea.setText(in.readLine());
-	
-								} catch (IOException error) {
-									JOptionPane.showMessageDialog(null,
-										"Could not find messages.",
-										"GET Error",
-										JOptionPane.ERROR_MESSAGE);
+								if (x < 0 || x > maxWidth || y < 0 || y > maxHeight) {
+									displayArea.setText("Could not get message.");
+
+								} else if (get.equals("")){
+									displayArea.setText("Could not get message.");
+
+								} else {
+									out.println(get);
+
+									try {
+										displayArea.setText(in.readLine());
+		
+									} catch (IOException error) {
+										JOptionPane.showMessageDialog(null,
+											"Could not find messages.",
+											"GET Error",
+											JOptionPane.ERROR_MESSAGE);
+									}
 								}
 							}
 						}
@@ -371,6 +423,9 @@ public class PINClient {
 								if(xcoor.getText().equals("") || ycoor.getText().equals("")) {
 									displayArea.setText("Message was not pinned.");
 
+								} else if (x < 0 || x > maxWidth || y < 0 || y > maxHeight) {
+									displayArea.setText("Message was not pinned.");
+
 								} else {
 									String pin = ("PIN " + x + " " + y);
 									out.println(pin);
@@ -422,6 +477,9 @@ public class PINClient {
 								}
 
 								if(xcoor.getText().equals("") || ycoor.getText().equals("")) {
+									displayArea.setText("Message was not unpinned.");
+
+								} else if (x < 0 || x > maxWidth || y < 0 || y > maxHeight) {
 									displayArea.setText("Message was not unpinned.");
 
 								} else {
