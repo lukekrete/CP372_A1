@@ -9,6 +9,7 @@ import java.util.Scanner;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import java.awt.Font;
 import javax.swing.JTextField;
 import javax.swing.JButton;
@@ -17,8 +18,10 @@ import java.awt.event.ActionEvent;
 import javax.swing.JOptionPane;
 import java.awt.TextArea;
 import java.awt.Choice;
+import java.awt.GridLayout;
 
-public class ClientLogin {
+
+public class PINClient {
 
 	private int maxWidth;
 	private int maxHeight;
@@ -39,7 +42,7 @@ public class ClientLogin {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					ClientLogin window = new ClientLogin();
+					PINClient window = new PINClient();
 					window.frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -51,7 +54,7 @@ public class ClientLogin {
 	/**
 	 * Create the application.
 	 */
-	public ClientLogin() {
+	public PINClient() {
 		frame = new JFrame();
 		frame.setBounds(100, 100, 375, 160);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -105,9 +108,7 @@ public class ClientLogin {
 					portTextField.setVisible(false);
 
 
-					/**
-					 * Fills the text box
-					 */
+		
 
 					TextArea displayArea = new TextArea();
 					displayArea.setBounds(20, 10, 437, 210);
@@ -175,22 +176,26 @@ public class ClientLogin {
 					maxWidth = Integer.parseInt(in.readLine());
 					maxHeight = Integer.parseInt(in.readLine());
 
+					displayArea.setText("Board Width: " + maxWidth + "\n" + "Board Height: " + maxHeight);
+
 					JButton btnPost = new JButton("POST");
 					btnPost.setMnemonic('P');
 					btnPost.addActionListener(new ActionListener() {
 						public void actionPerformed(ActionEvent e) {
+							//System.out.println("POST to server");
 							try {
 								x = Integer.parseInt(xVal.getText());
-								if (x < 0 || x > maxWidth) throw new NullPointerException();
-
 								y = Integer.parseInt(yVal.getText());
-								if (y < 0 || y > maxHeight) throw new IOException();
-
 								w = Integer.parseInt(width.getText());
-								if (w <= 0 || w > maxWidth) throw new IndexOutOfBoundsException();
-
 								h = Integer.parseInt(height.getText());
-								if (h <= 0 || h > maxHeight) throw new ArithmeticException();
+
+								if (x < 0 || x + w > maxWidth) throw new IOException();
+
+								if (y < 0 || y + h > maxHeight) throw new IOException();
+								
+								if (w <= 0 || x + w > maxWidth) throw new IOException();
+								
+								if (h <= 0 || y + h > maxHeight) throw new IOException();
 							
 							} catch(NumberFormatException n) {
 								JOptionPane.showMessageDialog(null,
@@ -198,45 +203,159 @@ public class ClientLogin {
 									"Invalid Input",
 									JOptionPane.ERROR_MESSAGE);
 
-							} catch(NullPointerException b) {
+							} catch(IOException a) {
 								JOptionPane.showMessageDialog(null,
-									"Enter a x value between 0-" + maxWidth + ").",
-									"Invalid Input",
+									"Note out of bounds.",
+									"Invalid Coordinate",
 									JOptionPane.ERROR_MESSAGE);
 
-							} catch(IOException c) {
-								JOptionPane.showMessageDialog(null,
-									"Enter a y value between 0-" + maxHeight + ").",
-									"Invalid Input",
-									JOptionPane.ERROR_MESSAGE);
-
-							} catch(IndexOutOfBoundsException d) {
-								JOptionPane.showMessageDialog(null,
-									"Enter a width between 0-" + maxWidth + ").",
-									"Invalid Input",
-									JOptionPane.ERROR_MESSAGE);
-
-							} catch(ArithmeticException d) {
-								JOptionPane.showMessageDialog(null,
-									"Enter a height between 0-" + maxWidth + ").",
-									"Invalid Input",
-									JOptionPane.ERROR_MESSAGE);
 							}
 
-							String post = "POST " + x + " " + y + " " + w + " " + h + " " + textArea.getText();
-							System.out.println(post);
+							if (xVal.getText().equals("") || yVal.getText().equals("") ||
+								width.getText().equals("") || height.getText().equals("")) {
+									displayArea.setText("Message was not posted.");
 
+							} else if (x < 0 || x + w > maxWidth || y < 0 || y + h> maxHeight ||
+										w <= 0 || x + w > maxWidth || h <= 0 || y + h > maxHeight) {
+											displayArea.setText("Message was not posted.");
+							
+							} else {
+								String post = "POST " + x + " " + y + " " + w + " " + h + " " + choice.getSelectedItem() + " " + textArea.getText();
+								out.println(post);
+
+								try {
+									displayArea.setText(in.readLine());
+
+								} catch (IOException error) {
+									JOptionPane.showMessageDialog(null,
+										"Message could not be posted.",
+										"Post Error",
+										JOptionPane.ERROR_MESSAGE);
+								}
+							}
 						}
 					});
 					btnPost.setBounds(299, 299, 158, 23);
-
 					frame.getContentPane().add(btnPost);
 					
 					JButton btnGet = new JButton("GET");
 					btnGet.setMnemonic('G');
 					btnGet.addActionListener(new ActionListener() {
 						public void actionPerformed(ActionEvent e) {
-							
+							//System.out.println("GET to server");
+							JPanel panel = new JPanel(new GridLayout(0, 1));
+							JTextField xcoor = new JTextField();
+							JTextField ycoor = new JTextField();
+							JTextField msg = new JTextField();
+							Choice list = new Choice();
+							list.add("");
+							Scanner color = new Scanner(colors);
+							while(color.hasNext()) {
+								list.add(color.next());
+							}
+							panel.add(new JLabel("X-value"));
+							panel.add(xcoor);
+							panel.add(new JLabel("Y-value"));
+							panel.add(ycoor);
+							panel.add(new JLabel("Color"));
+							panel.add(list);
+							panel.add(new JLabel("Message"));
+							panel.add(msg);
+
+							int result = JOptionPane.showConfirmDialog(null, panel, "GET",
+										JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+
+							if (result == JOptionPane.OK_OPTION) {
+								String get = ("");
+
+								if (xcoor.getText().equals("") && ycoor.getText().equals("") && 
+									list.getSelectedItem().equals("") && msg.getText().equals("")) {
+									get = get + "GET ALL";
+
+								} else if (xcoor.getText().equals("") && ycoor.getText().equals("") && 
+											list.getSelectedItem().equals("")) {
+												get = get + "GET refersTo= " + msg.getText();
+
+								} else if (xcoor.getText().equals("") && ycoor.getText().equals("") && 
+											msg.getText().equals("")){
+												get = get + "GET color= " + list.getSelectedItem();
+								
+								} else if (list.getSelectedItem().equals("") && msg.getText().equals("")) {
+									if (xcoor.getText().equals("") || ycoor.getText().equals("")) {
+										get = "";
+
+									} else {
+										get = get + "GET contains= " + xcoor.getText() + " " + ycoor.getText(); 
+									}
+								
+								} else if (xcoor.getText().equals("") && ycoor.getText().equals("")) {
+										get = get + "GET color= " + list.getSelectedItem() + " refersTo= " + msg.getText();
+
+								} else if (list.getSelectedItem().equals("")) {
+									if (xcoor.getText().equals("") || ycoor.getText().equals("")) {
+										get = "";
+
+									} else {
+										get = get + "GET contains= " + xcoor.getText() + " " + ycoor.getText() + " refersTo= " + msg.getText();
+									}
+
+								} else if (msg.getText().equals("")) {
+									if (xcoor.getText().equals("") || ycoor.getText().equals("")) {
+										get = "";
+
+									} else {
+										get = get + "GET contains= " + xcoor.getText() + " " + ycoor.getText() + " color= " +list.getSelectedItem();
+									}
+
+								} else {
+									try {
+										x = Integer.parseInt(xcoor.getText());
+										if (x < 0 || x > maxWidth) throw new NumberFormatException();
+
+										y = Integer.parseInt(ycoor.getText());
+										if (y < 0 || y > maxHeight) throw new NumberFormatException();
+
+										if (xcoor.getText().equals("") || ycoor.getText().equals("")) {
+											get = "";
+	
+										} else {
+											get = get + "GET color= " + list.getSelectedItem()
+												+ " contains= " + x + " " + y + " refersTo= " + msg.getText();
+										}
+									} catch (NumberFormatException error) {
+										JOptionPane.showMessageDialog(null,
+											"Enter valid coordinates.",
+											"Invalid Coordinates",
+											JOptionPane.ERROR_MESSAGE);
+									}
+								}
+
+								if (x < 0 || x > maxWidth || y < 0 || y > maxHeight) {
+									displayArea.setText("Could not get message.");
+
+								} else if (get.equals("")){
+									displayArea.setText("Could not get message.");
+
+								} else {
+									out.println(get);
+
+									try {
+										String printthis = "";
+										printthis = in.readLine();
+										printthis = printthis.replaceAll("------", "\n");
+										if (printthis.equals("")) {
+											printthis = "No notes found.";
+										}
+										displayArea.setText(printthis);
+										
+									} catch (IOException error) {
+										JOptionPane.showMessageDialog(null,
+											"Could not find messages.",
+											"GET Error",
+											JOptionPane.ERROR_MESSAGE);
+									}
+								}
+							}
 						}
 					});
 					btnGet.setBounds(299, 333, 73, 23);
@@ -245,7 +364,18 @@ public class ClientLogin {
 					JButton btnClear = new JButton("CLEAR");
 					btnClear.addActionListener(new ActionListener() {
 						public void actionPerformed(ActionEvent e) {
-							
+							out.println("CLEAR");
+
+							try {
+								displayArea.setText(in.readLine());
+
+							} catch (IOException error) {
+								JOptionPane.showMessageDialog(null,
+									"Could not find messages.",
+									"GET Error",
+									JOptionPane.ERROR_MESSAGE);
+							}
+
 						}
 					});
 					btnClear.setMnemonic('C');
@@ -256,7 +386,53 @@ public class ClientLogin {
 					btnPin.setMnemonic('I');
 					btnPin.addActionListener(new ActionListener() {
 						public void actionPerformed(ActionEvent e) {
+							JPanel panel = new JPanel(new GridLayout(0, 1));
+							JTextField xcoor = new JTextField();
+							JTextField ycoor = new JTextField();
+							panel.add(new JLabel("X-value"));
+							panel.add(xcoor);
+							panel.add(new JLabel("Y-value"));
+							panel.add(ycoor);
 
+							int result = JOptionPane.showConfirmDialog(null, panel, "PIN",
+										JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+							
+							if (result == JOptionPane.OK_OPTION) {
+								try {
+									x = Integer.parseInt(xcoor.getText());
+									if (x < 0 || x > maxWidth) throw new NumberFormatException();
+
+									y = Integer.parseInt(ycoor.getText());
+									if (y < 0 || y > maxHeight) throw new NumberFormatException();
+
+								} catch (NumberFormatException error) {
+									JOptionPane.showMessageDialog(null,
+										"Enter valid coordinates.",
+										"Invalid Coordinates",
+										JOptionPane.ERROR_MESSAGE);
+								}
+
+								if(xcoor.getText().equals("") || ycoor.getText().equals("")) {
+									displayArea.setText("Message was not pinned.");
+
+								} else if (x < 0 || x > maxWidth || y < 0 || y > maxHeight) {
+									displayArea.setText("Message was not pinned.");
+
+								} else {
+									String pin = ("PIN " + x + " " + y);
+									out.println(pin);
+
+									try {
+										displayArea.setText(in.readLine());
+		
+									} catch (IOException error) {
+										JOptionPane.showMessageDialog(null,
+											"Message could not be pinned.",
+											"PIN Error",
+											JOptionPane.ERROR_MESSAGE);
+									}
+								}
+							}
 						}
 					});
 					btnPin.setBounds(299, 367, 73, 23);
@@ -266,11 +442,84 @@ public class ClientLogin {
 					btnUnpin.setMnemonic('U');
 					btnUnpin.addActionListener(new ActionListener() {
 						public void actionPerformed(ActionEvent e) {
+							JPanel panel = new JPanel(new GridLayout(0, 1));
+							JTextField xcoor = new JTextField();
+							JTextField ycoor = new JTextField();
+							panel.add(new JLabel("X-value"));
+							panel.add(xcoor);
+							panel.add(new JLabel("Y-value"));
+							panel.add(ycoor);
 
+							int result = JOptionPane.showConfirmDialog(null, panel, "UNPIN",
+										JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+							
+							if (result == JOptionPane.OK_OPTION) {
+								try {
+									x = Integer.parseInt(xcoor.getText());
+									if (x < 0 || x > maxWidth) throw new NumberFormatException();
+
+									y = Integer.parseInt(ycoor.getText());
+									if (y < 0 || y > maxHeight) throw new NumberFormatException();
+
+								} catch (NumberFormatException error) {
+									JOptionPane.showMessageDialog(null,
+										"Enter valid coordinates.",
+										"Invalid Coordinates",
+										JOptionPane.ERROR_MESSAGE);
+								}
+
+								if(xcoor.getText().equals("") || ycoor.getText().equals("")) {
+									displayArea.setText("Message was not unpinned.");
+
+								} else if (x < 0 || x > maxWidth || y < 0 || y > maxHeight) {
+									displayArea.setText("Message was not unpinned.");
+
+								} else {
+									String unpin = ("UNPIN " + x + " " + y);
+									out.println(unpin);
+
+									try {
+										displayArea.setText(in.readLine());
+
+									} catch (IOException error) {
+										JOptionPane.showMessageDialog(null,
+											"Message could not be unpinned.",
+											"UNPIN Error",
+											JOptionPane.ERROR_MESSAGE);
+									}
+								}
+							}
 						}
 					});
 					btnUnpin.setBounds(382, 367, 75, 23);
 					frame.getContentPane().add(btnUnpin);
+
+					JButton btnGetPins = new JButton("GET PINS");
+					btnGetPins.setMnemonic('E');
+					btnGetPins.addActionListener(new ActionListener () {
+						public void actionPerformed(ActionEvent e) {
+							out.println("GET PINS");
+
+							try {
+								String printthis = "";
+								printthis = in.readLine();
+								printthis = printthis.replaceAll("------", "\n");
+								if (printthis.equals("")) {
+									printthis = "No pins found.";
+								}
+								displayArea.setText(printthis);
+								//displayArea.setText(in.readLine());
+
+							} catch (IOException error) {
+								JOptionPane.showMessageDialog(null,
+									"Could not find messages.",
+									"GET Error",
+									JOptionPane.ERROR_MESSAGE);
+							}
+						}
+					});
+					btnGetPins.setBounds(299, 401, 158, 23);
+					frame.getContentPane().add(btnGetPins);
 
 					JButton btnDisconnect = new JButton("DISCONNECT");
 					btnDisconnect.setMnemonic('D');
@@ -297,6 +546,7 @@ public class ClientLogin {
 							btnClear.setVisible(false);
 							btnPin.setVisible(false);
 							btnUnpin.setVisible(false);
+							btnGetPins.setVisible(false);
 							btnDisconnect.setVisible(false);
 
 							ipTextField.setVisible(true);
@@ -306,7 +556,7 @@ public class ClientLogin {
 							btnConnect.setVisible(true);
 						}
 					});
-					btnDisconnect.setBounds(299, 401, 158, 23);
+					btnDisconnect.setBounds(299, 433, 158, 23);
 					frame.getContentPane().add(btnDisconnect);
 								
 				} catch (Exception error) {
