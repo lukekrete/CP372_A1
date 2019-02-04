@@ -247,7 +247,6 @@ public class PINClient {
 						}
 					});
 					btnPost.setBounds(299, 299, 158, 23);
-
 					frame.getContentPane().add(btnPost);
 					
 					JButton btnGet = new JButton("GET");
@@ -445,6 +444,26 @@ public class PINClient {
 					btnUnpin.setBounds(382, 367, 75, 23);
 					frame.getContentPane().add(btnUnpin);
 
+					JButton btnGetPins = new JButton("GET PINS");
+					btnGetPins.setMnemonic('E');
+					btnGetPins.addActionListener(new ActionListener () {
+						public void actionPerformed(ActionEvent e) {
+							out.println("GET PINS");
+
+							try {
+								displayArea.setText(in.readLine());
+
+							} catch (IOException error) {
+								JOptionPane.showMessageDialog(null,
+									"Could not find messages.",
+									"GET Error",
+									JOptionPane.ERROR_MESSAGE);
+							}
+						}
+					});
+					btnGetPins.setBounds(299, 401, 158, 23);
+					frame.getContentPane().add(btnGetPins);
+
 					JButton btnDisconnect = new JButton("DISCONNECT");
 					btnDisconnect.setMnemonic('D');
 					btnDisconnect.addActionListener(new ActionListener() {
@@ -470,6 +489,7 @@ public class PINClient {
 							btnClear.setVisible(false);
 							btnPin.setVisible(false);
 							btnUnpin.setVisible(false);
+							btnGetPins.setVisible(false);
 							btnDisconnect.setVisible(false);
 
 							ipTextField.setVisible(true);
@@ -479,7 +499,7 @@ public class PINClient {
 							btnConnect.setVisible(true);
 						}
 					});
-					btnDisconnect.setBounds(299, 401, 158, 23);
+					btnDisconnect.setBounds(299, 433, 158, 23);
 					frame.getContentPane().add(btnDisconnect);
 								
 				} catch (Exception error) {
