@@ -104,8 +104,152 @@ public class PINServer {
 
     public void GET(String request){
 
-    }
+        //String line = " color= red contains= 2 2 refersTo= the man";
+        //Open our scanner for string parsing
+        String output = "";
+        int getallpins = 0;
+        int getallnotes = 0;
+        Scanner s = new Scanner(request);
+        //initialize variables
+        String ignore = "";
+        String color = "";
+        int contains_x = -1;
+        int contains_y = -1;
+        String message = "";
+        //GETTING THE CORRECT INPUT------------------------------------------------------
+        //if the request is to get all pins
+        if(request.contains("PINS")){
+            for(int i = 0; i < pins_list.size(); i++){
+                output = output + "{" + pins_list.get(i).x_coord + "," + pins_list.get(i).y_coord + "} ";
+            }
+            getallpins = 1;
+        //if it's not to get all pins
+        }else if(request.contains("ALL")){
+            for(int i = 0; i < board.size(); i++){
+                output = output + board.get(i).message + "\n";
+            }
+            getallnotes = 1;
+        }else{
+            if(request.contains("color= ")){
+                ignore = s.next();
+                color = s.next();
+                if(request.contains("contains= ")){
+                    ignore = s.next();
+                    contains_x = Integer.parseInt(s.next());
+                    contains_y = Integer.parseInt(s.next());
+                    if(request.contains("refersTo= ")){
+                        ignore = s.next();
+                        while(s.hasNext()){
+                            message = message + " " + s.next();
+                            message = message.trim();
+                        }
+                    }else{
+                        message = null;
+                    }
+                }else{
+                    contains_x = -1;
+                    contains_y = -1;
+                    if(request.contains("refersTo= ")){
+                        ignore = s.next();
+                        while(s.hasNext()){
+                            message = message + " " + s.next();
+                            message = message.trim();
+                        }
+                    }else{
+                        message = null;
+                    }
+                }
+            }else{
+                color = null;
+                if(request.contains("contains= ")){
+                    ignore = s.next();
+                    contains_x = Integer.parseInt(s.next());
+                    contains_y = Integer.parseInt(s.next());
+                    if(request.contains("refersTo= ")){
+                        ignore = s.next();
+                        while(s.hasNext()){
+                            message = message + " " + s.next();
+                            message = message.trim();
+                        }
+                    }else{
+                        message = null;
+                    }
+                }else{
+                    contains_x = -1;
+                    contains_y = -1;
+                    if(request.contains("refersTo= ")){
+                        ignore = s.next();
+                        while(s.hasNext()){
+                            message = message + " " + s.next();
+                            message = message.trim();
+                        }
+                    }else{
+                        message = null;
+                    }
+                }
+            }
+        //------------------------------------------------------------------------------------------
+        //System.out.println("Color:" + color + " | Contains:" + contains + " | message:" + message);
+        }
+        LinkedList<Note> match = new LinkedList<Note>();
+        if(getallpins == 0 && getallnotes == 0){
+            System.out.println("Color: " + color);
+            if(!color.equals(null)){
+                for(int i =0; i < board.size(); i++){
+                    if(board.get(i).colour.equals(color)){
+                        match.add(board.get(i));
+                    }
+                }
+                if(contains_x != -1 && contains_y != -1){
+                    for(int i = 0; i < match.size(); i++){
+                        if(match.get(i).x != contains_x && match.get(i).y != contains_y){
+                            match.remove(i);
+                        }
+                    }
+                    if(!message.equals(null)){
+                        for(int i = 0; i < match.size(); i++){
+                            if(!match.get(i).message.contains(message)){
+                                match.remove(i);
+                            }
+                        }
+                    }
+                }
+            }else{
+                //need to add for all colours
+                if(contains_x != -1 && contains_y != -1){
+                    for(int i =0; i < board.size(); i++){
+                        if(board.get(i).x == contains_x && match.get(i).y == contains_y){
+                            match.add(board.get(i));
+                        }
+                    }
+                    if(!message.equals(null)){
+                        for(int i = 0; i < match.size(); i++){
+                            if(!match.get(i).message.contains(message)){
+                                match.remove(i);
+                            }
+                        }
+                    }
+                }else{
+                    if(!message.equals(null)){
+                        for(int i = 0; i < board.size(); i++){
+                            if(board.get(i).message.contains(message)){
+                                match.add(board.get(i));
+                            }
+                        }
+                    }
+                }
+            }
 
+            for(int i = 0; i < match.size(); i++){
+                output = output + match.get(i).message + '\n';
+            }
+
+        }
+
+        //PRINT THE OUTPUT TO THE CLIENT
+        System.out.println(output);
+
+    }
     //WORKS
     public void POST(String request) {
         Scanner line = new Scanner(request);
