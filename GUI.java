@@ -203,25 +203,25 @@ public class PINClient {
 
 							} catch(NullPointerException b) {
 								JOptionPane.showMessageDialog(null,
-									"Enter a x value between 0-" + maxWidth + ").",
+									"Enter a x value between 0-" + maxWidth + ".",
 									"Invalid Coordinate",
 									JOptionPane.ERROR_MESSAGE);
 
 							} catch(IOException c) {
 								JOptionPane.showMessageDialog(null,
-									"Enter a y value between 0-" + maxHeight + ").",
+									"Enter a y value between 0-" + maxHeight + ".",
 									"Invalid Coordinate",
 									JOptionPane.ERROR_MESSAGE);
 
 							} catch(IndexOutOfBoundsException d) {
 								JOptionPane.showMessageDialog(null,
-									"Enter a width between 0-" + maxWidth + ").",
+									"Enter a width between 0-" + maxWidth + ".",
 									"Invalid Width",
 									JOptionPane.ERROR_MESSAGE);
 
 							} catch(ArithmeticException d) {
 								JOptionPane.showMessageDialog(null,
-									"Enter a height between 0-" + maxWidth + ").",
+									"Enter a height between 0-" + maxHeight + ".",
 									"Invalid Height",
 									JOptionPane.ERROR_MESSAGE);
 							}
