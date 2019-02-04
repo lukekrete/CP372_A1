@@ -10,7 +10,7 @@ import java.util.Scanner;
 
 public class PINServer {
 
-        public class Pin{
+    static class Pin{
         int x_coord;
         int y_coord;
 
@@ -21,7 +21,7 @@ public class PINServer {
     }
 
     /* Linked list Node*/
-    public class Note { 
+    static class Note { 
         String message;
         String colour;
         int status;//unpinned = 0, pinned > 0
@@ -83,7 +83,7 @@ public class PINServer {
      * socket.  The client terminates the dialogue by sending a single line
      * containing only a period.
      */
-    private static class Client extends Thread {
+    public static class Client extends Thread {
         private String password = "aKLASUgfokblasdfkokasdfkmaskdkliskLKHN";
         private Socket socket;
         private int clientNumber;
@@ -100,13 +100,8 @@ public class PINServer {
             log("New connection with client# " + clientNumber + " at " + socket);
         }
 
-        
- 
-
-   
-
     public String GET(String request){
-        System.out.println("GET from client");
+        //System.out.println("GET from client");
         //String line = " color= red contains= 2 2 refersTo= the man";
         //Open our scanner for string parsing
         String output = "";
@@ -256,7 +251,7 @@ public class PINServer {
     }
     //WORKS
     public void POST(String request) {
-        System.out.println("POST from client");
+        //System.out.println("POST from client");
         Scanner line = new Scanner(request);
         int x_coord = Integer.parseInt(line.next());
         int y_coord = Integer.parseInt(line.next());
@@ -333,8 +328,8 @@ public class PINServer {
                 for (int j = 0; j < current.pins.size(); j++) {
                     //check to see if that note is pinned by the target pin
                     if (current.pins.get(j).x_coord == x && current.pins.get(j).y_coord == y) {
-                        current.pins.remove(i);
-                        if(current.status >0) {
+                        current.pins.remove(j);
+                        if(current.status > 0) {
                             //System.out.println(current.status);
                             current.status--;
                             //System.out.println(current.status);
@@ -358,6 +353,7 @@ public class PINServer {
                 //delete it if it's not pinned
                 //System.out.println("Delete: " + current.message);
                 board.remove(i);
+                i--;
 
             }
         }
@@ -424,13 +420,7 @@ public class PINServer {
                             out.println("All unpinned notes cleared.");
             
                         } else if (command.equals("DISCONNECT")) {
-                            try {
-                                socket.close();
-
-                            } catch (Exception e) {
-                                log("Couldn't close the socket.");
-
-                            }
+                            break;
                         }
                     }
                     
@@ -442,9 +432,16 @@ public class PINServer {
             }} catch (IOException e) {
                 log("Error handling client# " + clientNumber + ": " + e);
                 
-            } //finally {
+            } finally {
+                try {
+                    socket.close();
+
+                } catch (Exception e) {
+                    log("Couldn't close the socket.");
+
+                }
                 log("Connection with client#" + clientNumber + " closed.");
-            //}
+            }
         }
 
         /**
