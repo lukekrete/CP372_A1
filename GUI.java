@@ -182,6 +182,7 @@ public class PINClient {
 					btnPost.setMnemonic('P');
 					btnPost.addActionListener(new ActionListener() {
 						public void actionPerformed(ActionEvent e) {
+							System.out.println("POST to server");
 							try {
 								x = Integer.parseInt(xVal.getText());
 								if (x < 0 || x > maxWidth) throw new NullPointerException();
@@ -257,6 +258,7 @@ public class PINClient {
 					btnGet.setMnemonic('G');
 					btnGet.addActionListener(new ActionListener() {
 						public void actionPerformed(ActionEvent e) {
+							System.out.println("GET to server");
 							JPanel panel = new JPanel(new GridLayout(0, 1));
 							JTextField xcoor = new JTextField();
 							JTextField ycoor = new JTextField();
@@ -288,29 +290,29 @@ public class PINClient {
 
 								} else if (xcoor.getText().equals("") && ycoor.getText().equals("") && 
 											list.getSelectedItem().equals("")) {
-												get = get + "GET refersTo=" + msg.getText();
+												get = get + "GET refersTo= " + msg.getText();
 
 								} else if (xcoor.getText().equals("") && ycoor.getText().equals("") && 
 											msg.getText().equals("")){
-												get = get + "GET color=" + list.getSelectedItem();
+												get = get + "GET color= " + list.getSelectedItem();
 								
 								} else if (list.getSelectedItem().equals("") && msg.getText().equals("")) {
 									if (xcoor.getText().equals("") || ycoor.getText().equals("")) {
 										get = "";
 
 									} else {
-										get = get + "GET contains=" + xcoor.getText() + " " + ycoor.getText(); 
+										get = get + "GET contains= " + xcoor.getText() + " " + ycoor.getText(); 
 									}
 								
 								} else if (xcoor.getText().equals("") && ycoor.getText().equals("")) {
-										get = get + "GET color=" + list.getSelectedItem() + " refersTo=" + msg.getText();
+										get = get + "GET color= " + list.getSelectedItem() + " refersTo= " + msg.getText();
 
 								} else if (list.getSelectedItem().equals("")) {
 									if (xcoor.getText().equals("") || ycoor.getText().equals("")) {
 										get = "";
 
 									} else {
-										get = get + "GET contains=" + xcoor.getText() + " " + ycoor.getText() + " refersTo=" + msg.getText();
+										get = get + "GET contains= " + xcoor.getText() + " " + ycoor.getText() + " refersTo= " + msg.getText();
 									}
 
 								} else if (msg.getText().equals("")) {
@@ -318,7 +320,7 @@ public class PINClient {
 										get = "";
 
 									} else {
-										get = get + "GET contains=" + xcoor.getText() + " " + ycoor.getText() + " color=" +list.getSelectedItem();
+										get = get + "GET contains= " + xcoor.getText() + " " + ycoor.getText() + " color= " +list.getSelectedItem();
 									}
 
 								} else {
@@ -333,8 +335,8 @@ public class PINClient {
 											get = "";
 	
 										} else {
-											get = get + "GET color=" + list.getSelectedItem()
-												+ " contains=" + x + " " + y + " refersTo=" + msg.getText();
+											get = get + "GET color= " + list.getSelectedItem()
+												+ " contains= " + x + " " + y + " refersTo= " + msg.getText();
 										}
 									} catch (NumberFormatException error) {
 										JOptionPane.showMessageDialog(null,
@@ -354,8 +356,14 @@ public class PINClient {
 									out.println(get);
 
 									try {
-										displayArea.setText(in.readLine());
-		
+										String printthis = "";
+										printthis = in.readLine();
+										printthis = printthis.replaceAll("------", "\n");
+										if (printthis.equals("")) {
+											printthis = "No notes found.";
+										}
+										displayArea.setText(printthis);
+										
 									} catch (IOException error) {
 										JOptionPane.showMessageDialog(null,
 											"Could not find messages.",
@@ -509,7 +517,14 @@ public class PINClient {
 							out.println("GET PINS");
 
 							try {
-								displayArea.setText(in.readLine());
+								String printthis = "";
+								printthis = in.readLine();
+								printthis = printthis.replaceAll("------", "\n");
+								if (printthis.equals("")) {
+									printthis = "No pins found.";
+								}
+								displayArea.setText(printthis);
+								//displayArea.setText(in.readLine());
 
 							} catch (IOException error) {
 								JOptionPane.showMessageDialog(null,
