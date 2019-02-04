@@ -10,6 +10,44 @@ import java.util.Scanner;
 
 public class PINServer {
 
+        public class Pin{
+        int x_coord;
+        int y_coord;
+
+            Pin(int x, int y){
+                x_coord = x;
+                y_coord = y;
+            }
+    }
+
+    /* Linked list Node*/
+    public class Note { 
+        String message;
+        String colour;
+        int status;//unpinned = 0, pinned > 0
+        LinkedList<Pin> pins;
+        int x;
+        int y;
+        int height;
+        int width;
+  
+        // Constructor to create a new node 
+        // Next is by default initialized 
+        // as null 
+        Note(String m, String c, int x_2, int y_2, int w, int h) {
+             message = m;
+             colour = c;
+             status = 0;  //unpinned = 0, pinned > 0
+             pins = new LinkedList<Pin>();
+             x = x_2;
+             y = y_2;
+             height = h;
+             width = w;
+        } 
+    }
+    public static LinkedList<Note> board = new LinkedList<Note>();
+    public static ArrayList<Pin> pins_list = new ArrayList<Pin>();
+    
     /**
      * Application method to run the server runs in an infinite loop
      * listening on port 9898.  When a connection is requested, it
@@ -33,7 +71,7 @@ public class PINServer {
         ServerSocket listener = new ServerSocket(port);
         try {
             while (true) {
-                new PIN(listener.accept(), clientNumber++, colors, bWidth, bHeight).start();
+                new Client(listener.accept(), clientNumber++, colors, bWidth, bHeight).start();
             }
         } finally {
             listener.close();
@@ -45,7 +83,7 @@ public class PINServer {
      * socket.  The client terminates the dialogue by sending a single line
      * containing only a period.
      */
-    private static class PIN extends Thread {
+    private static class Client extends Thread {
         private String password = "aKLASUgfokblasdfkokasdfkmaskdkliskLKHN";
         private Socket socket;
         private int clientNumber;
@@ -53,7 +91,7 @@ public class PINServer {
         private String bWidth;
         private String bHeight;
 
-        public PIN(Socket socket, int clientNumber, String colors_list, String width, String height) {
+        public Client(Socket socket, int clientNumber, String colors_list, String width, String height) {
             this.socket = socket;
             this.clientNumber = clientNumber;
             this.colors = colors_list;
@@ -63,47 +101,12 @@ public class PINServer {
         }
 
         
-    private class Pin{
-        int x_coord;
-        int y_coord;
+ 
 
-            Pin(int x, int y){
-                x_coord = x;
-                y_coord = y;
-            }
-    }
+   
 
-    /* Linked list Node*/
-    private class Note { 
-        String message;
-        String colour;
-        int status;//unpinned = 0, pinned > 0
-        LinkedList<Pin> pins;
-        int x;
-        int y;
-        int height;
-        int width;
-  
-        // Constructor to create a new node 
-        // Next is by default initialized 
-        // as null 
-        Note(String m, String c, int x_2, int y_2, int w, int h) {
-             message = m;
-             colour = c;
-             status = 0;  //unpinned = 0, pinned > 0
-             pins = new LinkedList<Pin>();
-             x = x_2;
-             y = y_2;
-             height = h;
-             width = w;
-        } 
-    } 
-
-    LinkedList<Note> board = new LinkedList<Note>();
-    ArrayList<Pin> pins_list = new ArrayList<Pin>();
-
-    public void GET(String request){
-
+    public String GET(String request){
+        System.out.println("GET from client");
         //String line = " color= red contains= 2 2 refersTo= the man";
         //Open our scanner for string parsing
         String output = "";
@@ -120,13 +123,13 @@ public class PINServer {
         //if the request is to get all pins
         if(request.contains("PINS")){
             for(int i = 0; i < pins_list.size(); i++){
-                output = output + "{" + pins_list.get(i).x_coord + "," + pins_list.get(i).y_coord + "} ";
+                output = output + "{" + pins_list.get(i).x_coord + "," + pins_list.get(i).y_coord + "}" + " ------";
             }
             getallpins = 1;
         //if it's not to get all pins
         }else if(request.contains("ALL")){
             for(int i = 0; i < board.size(); i++){
-                output = output + board.get(i).message + "\n";
+                output = output + board.get(i).message + "------";
             }
             getallnotes = 1;
         }else{
@@ -193,8 +196,8 @@ public class PINServer {
         }
         LinkedList<Note> match = new LinkedList<Note>();
         if(getallpins == 0 && getallnotes == 0){
-            System.out.println("Color: " + color);
-            if(!color.equals(null)){
+            //System.out.println("Color: " + color);
+            if(color != null){
                 for(int i =0; i < board.size(); i++){
                     if(board.get(i).colour.equals(color)){
                         match.add(board.get(i));
@@ -206,7 +209,7 @@ public class PINServer {
                             match.remove(i);
                         }
                     }
-                    if(!message.equals(null)){
+                    if(message != null){
                         for(int i = 0; i < match.size(); i++){
                             if(!match.get(i).message.contains(message)){
                                 match.remove(i);
@@ -218,11 +221,11 @@ public class PINServer {
                 //need to add for all colours
                 if(contains_x != -1 && contains_y != -1){
                     for(int i =0; i < board.size(); i++){
-                        if(board.get(i).x == contains_x && match.get(i).y == contains_y){
+                        if(board.get(i).x == contains_x && board.get(i).y == contains_y){
                             match.add(board.get(i));
                         }
                     }
-                    if(!message.equals(null)){
+                    if(message != null){
                         for(int i = 0; i < match.size(); i++){
                             if(!match.get(i).message.contains(message)){
                                 match.remove(i);
@@ -230,7 +233,7 @@ public class PINServer {
                         }
                     }
                 }else{
-                    if(!message.equals(null)){
+                    if(message != null){
                         for(int i = 0; i < board.size(); i++){
                             if(board.get(i).message.contains(message)){
                                 match.add(board.get(i));
@@ -241,17 +244,19 @@ public class PINServer {
             }
 
             for(int i = 0; i < match.size(); i++){
-                output = output + match.get(i).message + '\n';
+                output = output + match.get(i).message + "------";
             }
 
         }
 
         //PRINT THE OUTPUT TO THE CLIENT
-        System.out.println(output);
+        //System.out.println(output);
+        return output;
 
     }
     //WORKS
     public void POST(String request) {
+        System.out.println("POST from client");
         Scanner line = new Scanner(request);
         int x_coord = Integer.parseInt(line.next());
         int y_coord = Integer.parseInt(line.next());
@@ -273,36 +278,49 @@ public class PINServer {
     }
 
     //WORKS
-    public void PIN(String request){
+    public static int PIN(String request){
+        int exists = 0;
         Scanner line = new Scanner(request);
         int x = Integer.parseInt(line.next());
         int y = Integer.parseInt(line.next());
         //create new pin with coordinates from client
         Pin newPin = new Pin(x,y);
 
-        Note current;
-        for(int i = 0; i <board.size(); i++){
-            current = board.get(i);
-            //ensure that the pin is within the bounds of the current note
-            //CAN WE PUT 2 PINS ON TOP OF EACHOTHER????
-            if(x >= current.x && x <= current.x + current.width && y >= current.y && y <= current.y + current.height){
-                current.status++;
-                current.pins.add(newPin);
+        for(int i = 0; i < pins_list.size(); i++){
+            if(pins_list.get(i).x_coord == x && pins_list.get(i).y_coord == y){
+                exists = 1;
             }
         }
-        pins_list.add(newPin);
-        //log(pins_list.get(0).x_coord + ", " + pins_list.get(0).y_coord);
+
+
+        Note current;
+        if(exists == 0){
+            for(int i = 0; i <board.size(); i++){
+                current = board.get(i);
+                //ensure that the pin is within the bounds of the current note
+                if(x >= current.x && x <= current.x + current.width && y >= current.y && y <= current.y + current.height){
+                    current.status++;
+                    current.pins.add(newPin);
+                }
+            }
+            pins_list.add(newPin);
+            //log(pins_list.get(0).x_coord + ", " + pins_list.get(0).y_coord);
+        }
+        return exists;
     }
 
     //WORKS
-    public void UNPIN(String request){
+    public int UNPIN(String request){
         Scanner line = new Scanner(request);
+        int success = 0;
         int x = Integer.parseInt(line.next());
         int y = Integer.parseInt(line.next());
         int i = 0, found = 0;
         for (i = 0; i < pins_list.size(); i++) {
             if(pins_list.get(i).x_coord == x && pins_list.get(i).y_coord == y) {
                 pins_list.remove(i);
+                //out.println("Message successfully pinned.");
+                success = 1;
                 found = 1;
             }
         }
@@ -324,7 +342,11 @@ public class PINServer {
                     }
                 }
             }
+        }else{
+            success = 0;
+            //out.println("Pin not found.");
         }
+        return success;
     }
     //I THINK WORKS?
     public void CLEAR(){
@@ -332,9 +354,9 @@ public class PINServer {
         for (int i = 0; i < board.size(); i++){
             current = board.get(i);
             //determine if the note is pinned or not
-            if (current.status == 0){
+            if (current.status < 1){
                 //delete it if it's not pinned
-                System.out.println("Delete: " + current.message);
+                //System.out.println("Delete: " + current.message);
                 board.remove(i);
 
             }
@@ -375,19 +397,27 @@ public class PINServer {
                             out.println("Message successfully posted.");
 
                         } else if (command.equals("GET")) {
-                            GET(line.nextLine());
+                            String sendit = GET(line.nextLine());
                             //System.out.println(line.nextLine());
-                            out.println("Messages found.");
+                            out.println(sendit);
 
                         } else if (command.equals("PIN")) {
-                            PIN(line.nextLine());
+                            int v = PIN(line.nextLine());
                             //System.out.println(line.nextLine());
-                            out.println("Message successfully pinned.");
-
+                            if(v == 0){
+                                out.println("Pin successfully placed.");
+                            }else{
+                                out.println("Pin already exists.");
+                            }
                         } else if (command.equals("UNPIN")) {
-                            UNPIN(line.nextLine());
+                            int v = UNPIN(line.nextLine());
+                            if(v == 0){
+                                out.println("Pin not found.");
+                            }else{
+                                out.println("Pin successfully removed.");
+                            }
                             //System.out.println(line.nextLine());
-                            out.println("Message successfully unpinned");
+                            //out.println("Message successfully unpinned");
 
                         } else if (command.equals("CLEAR")) {
                             CLEAR();
