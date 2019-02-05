@@ -238,7 +238,7 @@ public class PINServer {
                 }
             }
 
-            for(int i = 0; i < match.size(); i++){
+            for(int i = 0; i < match.size(); i++) {
                 output = output + match.get(i).message + "------";
             }
 
@@ -377,8 +377,11 @@ public class PINServer {
                 String compare = in.readLine();
                 if (compare.equals(password)) {
                     out.println(colors);
+                    out.flush();
                     out.println(bWidth);
+                    out.flush();
                     out.println(bHeight);
+                    out.flush();
 
                     // Get messages from the client
                     
@@ -391,26 +394,36 @@ public class PINServer {
                         if (command.equals("POST")) {
                             POST(line.nextLine());
                             out.println("Message successfully posted.");
+                            out.flush();
 
                         } else if (command.equals("GET")) {
                             String sendit = GET(line.nextLine());
                             //System.out.println(line.nextLine());
                             out.println(sendit);
+                            out.flush();
 
                         } else if (command.equals("PIN")) {
                             int v = PIN(line.nextLine());
                             //System.out.println(line.nextLine());
                             if(v == 0){
                                 out.println("Pin successfully placed.");
+                                out.flush();
+
                             }else{
                                 out.println("Pin already exists.");
+                                out.flush();
+
                             }
                         } else if (command.equals("UNPIN")) {
                             int v = UNPIN(line.nextLine());
                             if(v == 0){
                                 out.println("Pin not found.");
+                                out.flush();
+
                             }else{
                                 out.println("Pin successfully removed.");
+                                out.flush();
+
                             }
                             //System.out.println(line.nextLine());
                             //out.println("Message successfully unpinned");
@@ -418,6 +431,7 @@ public class PINServer {
                         } else if (command.equals("CLEAR")) {
                             CLEAR();
                             out.println("All unpinned notes cleared.");
+                            out.flush();
             
                         } else if (command.equals("DISCONNECT")) {
                             break;
@@ -428,6 +442,7 @@ public class PINServer {
                     
                 } else {
                     out.println("Not using Client: Access Denied.");
+                    out.flush();
 
             }} catch (IOException e) {
                 log("Error handling client# " + clientNumber + ": " + e);
