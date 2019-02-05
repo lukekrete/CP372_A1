@@ -93,6 +93,7 @@ public class PINClient {
 					PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
 
 					out.println("aKLASUgfokblasdfkokasdfkmaskdkliskLKHN");
+					out.flush();
 
 					/**
 					 * Resizes the window and creates all new buttons
@@ -222,6 +223,7 @@ public class PINClient {
 							} else {
 								String post = "POST " + x + " " + y + " " + w + " " + h + " " + choice.getSelectedItem() + " " + textArea.getText();
 								out.println(post);
+								out.flush();
 
 								try {
 									displayArea.setText(in.readLine());
@@ -338,6 +340,7 @@ public class PINClient {
 
 								} else {
 									out.println(get);
+									out.flush();
 
 									try {
 										String printthis = "";
@@ -365,6 +368,7 @@ public class PINClient {
 					btnClear.addActionListener(new ActionListener() {
 						public void actionPerformed(ActionEvent e) {
 							out.println("CLEAR");
+							out.flush();
 
 							try {
 								displayArea.setText(in.readLine());
@@ -421,6 +425,7 @@ public class PINClient {
 								} else {
 									String pin = ("PIN " + x + " " + y);
 									out.println(pin);
+									out.flush();
 
 									try {
 										displayArea.setText(in.readLine());
@@ -477,6 +482,7 @@ public class PINClient {
 								} else {
 									String unpin = ("UNPIN " + x + " " + y);
 									out.println(unpin);
+									out.flush();
 
 									try {
 										displayArea.setText(in.readLine());
@@ -499,6 +505,7 @@ public class PINClient {
 					btnGetPins.addActionListener(new ActionListener () {
 						public void actionPerformed(ActionEvent e) {
 							out.println("GET PINS");
+							out.flush();
 
 							try {
 								String printthis = "";
@@ -526,6 +533,7 @@ public class PINClient {
 					btnDisconnect.addActionListener(new ActionListener() {
 						public void actionPerformed(ActionEvent e) {
 							out.println("DISCONNECT");
+							out.flush();
 
 							frame.setBounds(100, 100, 375, 160);
 							displayArea.setVisible(false);
