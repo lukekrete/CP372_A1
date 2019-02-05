@@ -3,6 +3,8 @@ Introduction to Client-Server interactions
 
 
 INSTRUCTIONS FOR PROPER EXECUTION:
+Please download all files onto your machine before attempting any execution, and ensure you are in the proper working directory in your cmd.
+
 1. Compile Server.java with a command such as "javac Server.java"
 2. Compile Client with a command such as "javac Client.java"
 3. Run the server by issuing the command: "java Server <port> <board width> <board height> <colours separated by space>"
